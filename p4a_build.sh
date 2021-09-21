@@ -1,0 +1,1 @@
+`p4a clean_dists && p4a apk`

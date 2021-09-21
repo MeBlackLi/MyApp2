@@ -1,0 +1,19 @@
+--debug
+--sdk_dir /home/blacklee/.buildozer/android/platform/android-sdk
+--android_api 27
+--ndk_dir /home/blacklee/.buildozer/android/platform/android-ndk-r19c
+--ndk_version r19c
+
+--dist_name=MyApp2
+--name "Black app1" 
+--requirements python3,kivy,pyjnius
+--bootstrap sdl2 
+
+--private .
+--package org.blackapp.myapp 
+--version 0.1 
+--permission VIBRATE
+--permission WRITE_EXTERNAL_STORAGE
+--permission ACCESS_FINE_LOCATION
+--permission ACCESS_COARSE_LOCATION
+--permission ACCESS_MOCK_LOCATION
