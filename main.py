@@ -32,7 +32,6 @@ from plyer import barometer
 from plyer import accelerometer
 from plyer import vibrator, gps
 
-
 # from jnius import autoclass
 # from sys import addaudithook
 kivy.require('2.0.0')
@@ -50,8 +49,8 @@ kivy.require('2.0.0')
 # Context = autoclass('android.content.Context')
 # vibrator = activity.getSystemService(Context.VIBRATOR_SERVICE)
 
-# from android.permissions import request_permissions, Permission
-# request_permissions([Permission.WRITE_EXTERNAL_STORAGE])
+from android.permissions import request_permissions, Permission
+request_permissions([Permission.WRITE_EXTERNAL_STORAGE])
 
 class MainWidget(GridLayout):
     def __init__(self, **kwargs):
@@ -126,7 +125,7 @@ class MainWidget(GridLayout):
                 map(str, spatialorientation.orientation))
             self.ids['brightness'].text = str(brightness.current_level())
             # self.ids['proc'].text = str(processors.status)
-            self.ids['Dp'].text = str(storagepath.get_sdcard_dir())
+            self.ids['Dp'].text = str(storagepath.get_external_storage_dir())
             # self.ids['Dp'].text = f"app_dir: {StoragePath.get_application_dir()} \
             #                         doc_dir: {StoragePath.get_documents_dir_dir()}
             #                         dow_dir: {StoragePath.get_downloads_dir()}
@@ -143,7 +142,17 @@ class BlackApp(App):
 
     def build(self):
         AmainWidget = MainWidget()
-        # request_permissions([Permission.WRITE_SETTINGS])
+        request_permissions(
+            [Permission.WRITE_EXTERNAL_STORAGE,
+             Permission.ACCESS_FINE_LOCATION,
+             Permission.VIBRATE,
+             Permission.WAKE_LOCK,
+             Permission.CAMERA,
+             Permission.WRITE_SETTINGS,
+             Permission.CHANGE_CONFIGURATION,
+             Permission.WRITE_CALENDAR,
+             Permission.ACCESS_COARSE_LOCATION],
+        )
         return AmainWidget
 
 
