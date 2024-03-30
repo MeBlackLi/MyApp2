@@ -1,0 +1,1673 @@
+diff --git a/.github/workflows/ci_ubuntu.yml b/.github/workflows/ci_ubuntu.yml
+index bade4ae..a408a9a 100644
+--- a/.github/workflows/ci_ubuntu.yml
++++ b/.github/workflows/ci_ubuntu.yml
+@@ -47,7 +47,7 @@ jobs:
+         tests
+ 
+     - name: Upload Coverage
+-      if: github.event_name == 'push' && github.ref == 'refs/head/master'
++      if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+       env:
+           COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+       run: |
+diff --git a/.github/workflows/no-response.yml b/.github/workflows/no-response.yml
+new file mode 100644
+index 0000000..f34d064
+--- /dev/null
++++ b/.github/workflows/no-response.yml
+@@ -0,0 +1,30 @@
++name: No Response
++
++# Both `issue_comment` and `scheduled` event types are required for this Action
++# to work properly.
++on:
++  issue_comment:
++    types: [created]
++  schedule:
++    # Schedule for five minutes after the hour, every hour
++    - cron: '5 * * * *'
++
++jobs:
++  noResponse:
++    runs-on: ubuntu-latest
++    steps:
++      - uses: lee-dohm/no-response@9bb0a4b5e6a45046f00353d5de7d90fb8bd773bb
++        # This commit hash targets release v0.5.0 of lee-dohm/no-response.
++        # Targeting a commit hash instead of a tag has been done for security reasons.
++        # Please be aware that the commit hash specifically targets the "Automatic compilation"
++        # done by `github-actions[bot]` as the `no-response` Action needs to be compiled.
++        with:
++          token: ${{ github.token }}
++          daysUntilClose: 42
++          responseRequiredLabel: 'awaiting-reply'
++          closeComment: >
++                This issue has been automatically closed because there has been no response
++                to our request for more information from the original author. With only the
++                information that is currently in the issue, we don't have the means
++                to take action. Please reach out if you have or find the answers we need so
++                that we can investigate further.
+diff --git a/.github/workflows/support.yml b/.github/workflows/support.yml
+new file mode 100644
+index 0000000..944addf
+--- /dev/null
++++ b/.github/workflows/support.yml
+@@ -0,0 +1,27 @@
++name: 'Support Requests'
++
++on:
++  issues:
++    types: [labeled, unlabeled, reopened]
++
++permissions:
++  issues: write
++
++jobs:
++  action:
++    runs-on: ubuntu-latest
++    steps:
++      - uses: dessant/support-requests@v4
++        with:
++          github-token: ${{ github.token }}
++          support-label: 'support'
++          issue-comment: >
++            👋 We use the issue tracker exclusively for bug reports and feature requests.
++            However, this issue appears to be a support request. Please use our
++            [support channels](https://github.com/kivy/plyer/blob/master/CONTACT.md)
++            to get help with the project.
++            
++            Let us know if this comment was made in error, and we'll be happy
++            to reopen the issue.
++          close-issue: true
++          lock-issue: false
+diff --git a/.readthedocs.yaml b/.readthedocs.yaml
+new file mode 100644
+index 0000000..1aed295
+--- /dev/null
++++ b/.readthedocs.yaml
+@@ -0,0 +1,16 @@
++# Read the Docs configuration file for Sphinx projects
++# See https://docs.readthedocs.io/en/stable/config-file/v2.html for details
++
++version: 2
++
++build:
++  os: ubuntu-22.04
++  tools:
++    python: "3"
++
++python:
++  install:
++    - requirements: docs/requirements.txt
++
++sphinx:
++  configuration: docs/source/conf.py
+\ No newline at end of file
+diff --git a/CODE_OF_CONDUCT.md b/CODE_OF_CONDUCT.md
+new file mode 100644
+index 0000000..29d18fa
+--- /dev/null
++++ b/CODE_OF_CONDUCT.md
+@@ -0,0 +1,8 @@
++In the interest of fostering an open and welcoming community, we as 
++contributors and maintainers need to ensure participation in our project and 
++our sister projects is a harassment-free and positive experience for everyone. 
++It is vital that all interaction is conducted in a manner conveying respect, 
++open-mindedness and gratitude.
++
++Please consult the [latest Kivy Code of Conduct](https://github.com/kivy/kivy/blob/master/CODE_OF_CONDUCT.md).
++
+diff --git a/CONTACT.md b/CONTACT.md
+new file mode 100644
+index 0000000..a98bb33
+--- /dev/null
++++ b/CONTACT.md
+@@ -0,0 +1,8 @@
++.. _contact:
++
++Contact Us
++==========
++
++If you are looking to contact the Kivy Team (who are responsible for managing the
++Plyer project), including looking for support, please see our
++`latest contact details <https://github.com/kivy/kivy/blob/master/CONTACT.md>`_.
+\ No newline at end of file
+diff --git a/CONTRIBUTING.md b/CONTRIBUTING.md
+new file mode 100644
+index 0000000..eccdf08
+--- /dev/null
++++ b/CONTRIBUTING.md
+@@ -0,0 +1,10 @@
++# Contribution Guidelines
++
++Plyer is part of the [Kivy](https://kivy.org) ecosystem - a large group of
++products used by many thousands of developers for free, but it
++is built entirely by the contributions of volunteers. We welcome (and rely on) 
++users who want to give back to the community by contributing to the project.
++
++Contributions can come in many forms. See the latest 
++[Contribution Guidelines](https://github.com/kivy/kivy/blob/master/CONTRIBUTING.md)
++for how you can help us.
+diff --git a/FAQ.md b/FAQ.md
+new file mode 100644
+index 0000000..8d6ee2e
+--- /dev/null
++++ b/FAQ.md
+@@ -0,0 +1,13 @@
++# FAQ for Plyer
++
++## Introduction
++
++Plyer is a platform-independent Python API for accessing hardware features
++of various platforms (Android, iOS, macOS, Linux and Windows).
++
++Plyer is managed by the [Kivy Team](https://kivy.org/about.html). It is suitable for
++use with Kivy apps, but can be used independently.
++
++## No questions yet
++
++No Frequently Asked Questions have been identified yet. Please contribute some.
+diff --git a/LICENSE b/LICENSE
+index d5d6b13..4e35060 100644
+--- a/LICENSE
++++ b/LICENSE
+@@ -1,4 +1,6 @@
+-Copyright (c) 2010-2017 Kivy Team and other contributors
++MIT License
++
++Copyright (c) 2010-2023 Kivy Team and other contributors
+ 
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to deal
+diff --git a/README.md b/README.md
+index dd1b5a8..0afa8a5 100644
+--- a/README.md
++++ b/README.md
+@@ -1,133 +1,171 @@
+ # Plyer
+ 
+-Plyer is a platform-independent api to use features commonly found on various
+-platforms, notably mobile ones, in Python.
++Plyer is a platform-independent Python API for accessing hardware features
++of various platforms (Android, iOS, macOS, Linux and Windows).
++
++Plyer is managed by the [Kivy Team](https://kivy.org/about.html). It is suitable for
++use with Kivy apps, but can be used independently.
+ 
+-[![coverage](https://coveralls.io/repos/kivy/plyer/badge.svg?branch=master)](https://coveralls.io/r/kivy/plyer?branch=master)
+ [![Backers on Open Collective](https://opencollective.com/kivy/backers/badge.svg)](#backers)
+ [![Sponsors on Open Collective](https://opencollective.com/kivy/sponsors/badge.svg)](#sponsors)
+-![Continuous Integration with Ubuntu](https://github.com/kivy/plyer/workflows/Continuous%20Integration%20with%20Ubuntu/badge.svg)
++[![GitHub contributors](https://img.shields.io/github/contributors-anon/kivy/plyer)](https://github.com/kivy/plyer/graphs/contributors)
++[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg)](code_of_conduct.md)
++
++
++![PyPI - Version](https://img.shields.io/pypi/v/plyer)
++![PyPI - Python Version](https://img.shields.io/pypi/pyversions/plyer)
++
++
++[![coverage](https://coveralls.io/repos/kivy/plyer/badge.svg?branch=master)](https://coveralls.io/r/kivy/plyer?branch=master)
++![Continuous Integration with Ubuntu](https://github.com/kivy/plyer/workflows/Continuous%20Integration%20with%20Ubuntu/badge.svg) 
+ ![Continuous Integration with OSX](https://github.com/kivy/plyer/workflows/Continuous%20Integration%20with%20OSX/badge.svg)
+ ![Continuous Integration with Windows](https://github.com/kivy/plyer/workflows/Continuous%20Integration%20with%20Windows/badge.svg)
+ ![Deploy to PyPI](https://github.com/kivy/plyer/workflows/Deploy%20to%20PyPI/badge.svg)
+ 
+-
+ ## How plyer works?
+ 
+-Plyer tries not to reinvent the wheel, and will call for external libraries to
+-implement the api in the easiest way, depending on the current platform.
++Plyer tries not to reinvent the wheel, and will call external libraries to
++implement the API in the easiest way, depending on the current platform.
+ 
+-- On Android(python-for-android), pyjnius is used
+-- On iOS(kivy-ios), pyobjus is used
+-- On windows/mac/linux, commonly found libraries and programs will be used
++- On Android ([python-for-android](https://python-for-android.readthedocs.io/)), [PyJNIus](https://pypi.org/project/pyjnius/) is used.
++- On iOS ([kivy-ios](https://pypi.org/project/kivy-ios/)) and macOS,
++  [pyobjus](https://pypi.org/project/pyobjus/) is used. 
++- On Windows, macOS and Linux, other commonly found libraries and programs 
++  are used.
+ 
+ 
+ ## Supported APIs
+ 
+-| Platform                       | Android | iOS | Windows | OS X | Linux |
+-| ------------------------------ | ------- | --- | ------- | ---- | ----- |
+-| Accelerometer                  | ✔       | ✔   |         | ✔    | ✔     |
+-| Audio recording                | ✔       |     | ✔       | ✔    |       |
+-| Barometer                      | ✔       | ✔   |         |      |       |
+-| Battery                        | ✔       | ✔   | ✔       | ✔    | ✔     |
+-| Bluetooth                      | ✔       |     |         | ✔    |       |
+-| Brightness                     | ✔       | ✔   |         |      | ✔     |
+-| Call                           | ✔       | ✔   |         |      |       |
+-| Camera (taking picture)        | ✔       | ✔   |         |      |       |
+-| Compass                        | ✔       | ✔   |         |      |       |
+-| CPU count                      |         |     | ✔       | ✔    | ✔     |
+-| Devicename                     | ✔       |     | ✔       | ✔    | ✔     |
+-| Email (open mail client)       | ✔       | ✔   | ✔       | ✔    | ✔     |
+-| Flash                          | ✔       | ✔   |         |      |       |
+-| GPS                            | ✔       | ✔   |         |      |       |
+-| Gravity                        | ✔       | ✔   |         |      |       |
+-| Gyroscope                      | ✔       | ✔   |         |      |       |
+-| Humidity                       | ✔       |     |         |      |       |
+-| IR Blaster                     | ✔       |     |         |      |       |
+-| Keystore                       | ✔       | ✔   | ✔       | ✔    | ✔     |
+-| Light                          | ✔       |     |         |      |       |
+-| Native file chooser            | ✔       | ✔   | ✔       | ✔    | ✔     |
+-| Notifications                  | ✔       |     | ✔       | ✔    | ✔     |
+-| Orientation                    | ✔       |     |         |      | ✔     |
+-| Proximity                      | ✔       |     |         |      |       |
+-| Screenshot                     |         |     | ✔       | ✔    | ✔     |
+-| SMS (send messages)            | ✔       | ✔   |         |      |       |
+-| Spatial Orientation            | ✔       | ✔   |         |      |       |
+-| Speech to text                 | ✔       |     |         |      |       |
+-| Storage Path                   | ✔       | ✔   | ✔       | ✔    | ✔     |
+-| Temperature                    | ✔       |     |         |      |       |
+-| Text to speech                 | ✔       | ✔   | ✔       | ✔    | ✔     |
+-| Unique ID                      | ✔       | ✔   | ✔       | ✔    | ✔     |
+-| Vibrator                       | ✔       | ✔   |         |      |       |
+-| Wifi                           |         |     | ✔       | ✔    | ✔     |
+-
++| Platform                       | Android | iOS | Windows | macOS | Linux |
++| ------------------------------ |:-------:|:---:|:-------:|:-----:|:-----:|
++| Accelerometer                  | ✔       |  ✔ |         | ✔     |   ✔   |
++| Audio recording                | ✔       |     |    ✔    | ✔     |       |
++| Barometer                      | ✔       |  ✔  |         |       |       |
++| Battery                        | ✔       |  ✔  |    ✔    | ✔     |   ✔   |
++| Bluetooth                      | ✔       |     |         | ✔     |       |
++| Brightness                     | ✔       |  ✔  |         |       |   ✔   |
++| Call                           | ✔       |  ✔  |         |       |       |
++| Camera (taking picture)        | ✔       |  ✔  |         |       |       |
++| Compass                        | ✔       |  ✔  |         |       |       |
++| CPU count                      |         |     |    ✔    | ✔     |   ✔   |
++| Devicename                     | ✔       |     |    ✔    | ✔     |   ✔   |
++| Email (open mail client)       | ✔       |  ✔  |    ✔    | ✔     |   ✔   |
++| Flash                          | ✔       |  ✔  |         |       |       |
++| GPS                            | ✔       |  ✔  |         |       |       |
++| Gravity                        | ✔       |  ✔  |         |       |       |
++| Gyroscope                      | ✔       |  ✔  |         |       |       |
++| Humidity                       | ✔       |     |         |       |       |
++| IR Blaster                     | ✔       |     |         |       |       |
++| Keystore                       | ✔       |  ✔  |    ✔    | ✔     |   ✔   |
++| Light                          | ✔       |     |         |       |       |
++| Maps                           |         |  ✔  |         | ✔     |       |
++| Native file chooser            | ✔       |  ✔  |    ✔    | ✔     |   ✔   |
++| Notifications                  | ✔       |     |    ✔    | ✔     |   ✔   |
++| Orientation                    | ✔       |     |         |       |   ✔   |
++| Proximity                      | ✔       |     |         |       |       |
++| Screenshot                     |         |     |    ✔    | ✔     |   ✔   |
++| SMS (send messages)            | ✔       |  ✔  |         | ✔     |       |
++| Spatial Orientation            | ✔       |  ✔  |         |       |       |
++| Speech to text                 | ✔       |     |         |       |       |
++| Storage Path                   | ✔       |  ✔  |    ✔    | ✔     |   ✔   |
++| Temperature                    | ✔       |     |         |       |       |
++| Text to speech                 | ✔       |  ✔  |    ✔    | ✔     |   ✔   |
++| Unique ID                      | ✔       |  ✔  |    ✔    | ✔     |   ✔   |
++| Vibrator                       | ✔       |  ✔  |         |       |       |
++| Wifi                           |         |     |    ✔    | ✔     |   ✔   |
++
++## Documentation
++
++Full documentation, including details about the API, is available 
++[online](https://plyer.readthedocs.io/en/latest/). If you are not using the
++latest version of Plyer, earlier versions of the documentations are linked
++from there.
+ 
+ ## Installation
+ 
+ To use on desktop: `pip install plyer`
+-To use in python-for-android/kivy-ios: add `plyer` to your requirements if needed.
+-
+-## Support
++To use in python-for-android and Kivy for iOS, add `plyer` to your requirements
++if needed.
+ 
+-If you need assistance, you can ask for help on our mailing list:
++## License
+ 
+-* User Group : https://groups.google.com/group/kivy-users
+-* Email      : kivy-users@googlegroups.com
++Plyer is [MIT licensed](LICENSE), actively developed by a great
++community and is supported by many projects managed by the 
++[Kivy Organization](https://www.kivy.org/about.html).
+ 
+-Discord channel:
++## Support
+ 
+-* Server     : https://chat.kivy.org
+-* Channel    : #dev
++Are you having trouble using Plyer or any of its related projects in the Kivy
++ecosystem?
++Is there an error you don’t understand? Are you trying to figure out how to use 
++it? We have volunteers who can help!
+ 
++The best channels to contact us for support are listed in the latest 
++[Contact Us](https://github.com/kivy/plyer/blob/master/CONTACT.md) document.
+ 
+ ## Contributing
+ 
+-We love pull requests and discussing novel ideas. Check out our
+-[contribution guide](http://kivy.org/docs/contribute.html) and
+-feel free to improve Plyer.
+-
+-The following mailing list and IRC channel are used exclusively for
+-discussions about developing the Kivy framework and its sister projects:
++Plyer is part of the [Kivy](https://kivy.org) ecosystem - a large group of
++products used by many thousands of developers for free, but it
++is built entirely by the contributions of volunteers. We welcome (and rely on) 
++users who want to give back to the community by contributing to the project.
+ 
+-* Dev Group : https://groups.google.com/group/kivy-dev
+-* Email     : kivy-dev@googlegroups.com
++Contributions can come in many forms. See the latest 
++[Contribution Guidelines](https://github.com/kivy/plyer/blob/master/CONTRIBUTING.md)
++for how you can help us.
+ 
+-IRC channel:
++## Code of Conduct
+ 
+-* Server  : irc.freenode.net
+-* Port    : 6667, 6697 (SSL only)
+-* Channel : #kivy-dev
+-
+-
+-## License
++In the interest of fostering an open and welcoming community, we as 
++contributors and maintainers need to ensure participation in our project and 
++our sister projects is a harassment-free and positive experience for everyone. 
++It is vital that all interaction is conducted in a manner conveying respect, 
++open-mindedness and gratitude.
+ 
+-Plyer is released under the terms of the MIT License. Please refer to the
+-LICENSE file.
++Please consult the [latest Code of Conduct](https://github.com/kivy/plyer/blob/master/CODE_OF_CONDUCT.md).
+ 
+ ## Contributors
+ 
+-This project exists thanks to all the people who contribute. [[Contribute](http://kivy.org/docs/contribute.html)].
++This project exists thanks to 
++[all the people who contribute](https://github.com/kivy/plyer/graphs/contributors).
++[[Become a contributor](CONTRIBUTING.md)].
+ 
+-<a href="https://github.com/kivy/plyer/graphs/contributors"><img src="https://contrib.rocks/image?repo=kivy/plyer"/></a>
++<img src="https://contrib.nn.ci/api?repo=kivy/plyer&pages=5&no_bot=true&radius=22&cols=18">
+ 
+ ## Backers
+ 
+-Thank you to all our backers! 🙏 [[Become a backer](https://opencollective.com/kivy#backer)]
+-
+-<a href="https://opencollective.com/kivy#backers" target="_blank"><img src="https://opencollective.com/kivy/backers.svg?width=890"></a>
++Thank you to [all of our backers](https://opencollective.com/kivy)! 
++🙏 [[Become a backer](https://opencollective.com/kivy#backer)]
+ 
++<img src="https://opencollective.com/kivy/backers.svg?width=890&avatarHeight=44&button=false">
+ 
+ ## Sponsors
+ 
+-Support this project by becoming a sponsor. Your logo will show up here with a link to your website. [[Become a sponsor](https://opencollective.com/kivy#sponsor)]
++Special thanks to 
++[all of our sponsors, past and present](https://opencollective.com/kivy).
++Support this project by 
++[[becoming a sponsor](https://opencollective.com/kivy#sponsor)].
++
++Here are our top current sponsors. Please click through to see their websites,
++and support them as they support us. 
+ 
++<!--- See https://github.com/orgs/kivy/discussions/15 for explanation of this code. -->
+ <a href="https://opencollective.com/kivy/sponsor/0/website" target="_blank"><img src="https://opencollective.com/kivy/sponsor/0/avatar.svg"></a>
+ <a href="https://opencollective.com/kivy/sponsor/1/website" target="_blank"><img src="https://opencollective.com/kivy/sponsor/1/avatar.svg"></a>
+ <a href="https://opencollective.com/kivy/sponsor/2/website" target="_blank"><img src="https://opencollective.com/kivy/sponsor/2/avatar.svg"></a>
+ <a href="https://opencollective.com/kivy/sponsor/3/website" target="_blank"><img src="https://opencollective.com/kivy/sponsor/3/avatar.svg"></a>
++
+ <a href="https://opencollective.com/kivy/sponsor/4/website" target="_blank"><img src="https://opencollective.com/kivy/sponsor/4/avatar.svg"></a>
+ <a href="https://opencollective.com/kivy/sponsor/5/website" target="_blank"><img src="https://opencollective.com/kivy/sponsor/5/avatar.svg"></a>
+ <a href="https://opencollective.com/kivy/sponsor/6/website" target="_blank"><img src="https://opencollective.com/kivy/sponsor/6/avatar.svg"></a>
+ <a href="https://opencollective.com/kivy/sponsor/7/website" target="_blank"><img src="https://opencollective.com/kivy/sponsor/7/avatar.svg"></a>
++
+ <a href="https://opencollective.com/kivy/sponsor/8/website" target="_blank"><img src="https://opencollective.com/kivy/sponsor/8/avatar.svg"></a>
+ <a href="https://opencollective.com/kivy/sponsor/9/website" target="_blank"><img src="https://opencollective.com/kivy/sponsor/9/avatar.svg"></a>
++<a href="https://opencollective.com/kivy/sponsor/10/website" target="_blank"><img src="https://opencollective.com/kivy/sponsor/10/avatar.svg"></a>
++<a href="https://opencollective.com/kivy/sponsor/11/website" target="_blank"><img src="https://opencollective.com/kivy/sponsor/11/avatar.svg"></a>
++
++<a href="https://opencollective.com/kivy/sponsor/12/website" target="_blank"><img src="https://opencollective.com/kivy/sponsor/12/avatar.svg"></a>
++<a href="https://opencollective.com/kivy/sponsor/13/website" target="_blank"><img src="https://opencollective.com/kivy/sponsor/13/avatar.svg"></a>
++<a href="https://opencollective.com/kivy/sponsor/14/website" target="_blank"><img src="https://opencollective.com/kivy/sponsor/14/avatar.svg"></a>
++<a href="https://opencollective.com/kivy/sponsor/15/website" target="_blank"><img src="https://opencollective.com/kivy/sponsor/15/avatar.svg"></a>
+diff --git a/docs/requirements.txt b/docs/requirements.txt
+new file mode 100644
+index 0000000..2a72e68
+--- /dev/null
++++ b/docs/requirements.txt
+@@ -0,0 +1,2 @@
++Sphinx~=7.2.6
++furo==2023.9.10
+\ No newline at end of file
+diff --git a/docs/source/api.rst b/docs/source/api.rst
+new file mode 100644
+index 0000000..7be16c4
+--- /dev/null
++++ b/docs/source/api.rst
+@@ -0,0 +1,11 @@
++
++.. _api:
++
++API
++===
++
++.. automodule:: plyer
++    :members:
++
++.. automodule:: plyer.facades
++    :members:
+diff --git a/docs/source/conf.py b/docs/source/conf.py
+index e08f9fe..fcda58a 100644
+--- a/docs/source/conf.py
++++ b/docs/source/conf.py
+@@ -11,9 +11,10 @@
+ # All configuration values have a default; values that are commented out
+ # serve to show the default.
+ 
++import datetime
+ import os
++import re
+ import sys
+-import plyer
+ 
+ # If extensions (or modules to document with autodoc) are in another directory,
+ # add these directories to sys.path here. If the directory is relative to the
+@@ -42,17 +43,40 @@ source_suffix = '.rst'
+ master_doc = 'index'
+ 
+ # General information about the project.
+-project = u'Plyer'
+-copyright = u'2013, Mathieu Virbel, Akshay Aurora, Gabriel Petier, Ben Rousch'
++project = 'Plyer'
++
++_today = datetime.datetime.now()
++
++author = "Kivy Team and other contributors"
++
++copyright = f'{_today.year}, {author}'
+ 
+ # The version info for the project you're documenting, acts as replacement for
+ # |version| and |release|, also used in various other places throughout the
+ # built documents.
+ #
++
++
++# Lookup the version from the pyjnius module, without installing it
++# since readthedocs.org may have issue to install it.
++# Read the version from the __init__.py file, without importing it.
++def get_version():
++    with open(
++        os.path.join(os.path.abspath("../.."), "plyer", "__init__.py")
++    ) as fp:
++        for line in fp:
++            m = re.search(
++                r'^\s*__version__\s*=\s*([\'"])([^\'"]+)\1\s*$',
++                line,
++            )
++            if m:
++                return m.group(2)
++
++
+ # The short X.Y version.
+-version = plyer.__version__
++version = get_version()
+ # The full version, including alpha/beta/rc tags.
+-release = plyer.__version__
++release = get_version()
+ 
+ # The language for content autogenerated by Sphinx. Refer to documentation
+ # for a list of supported languages.
+@@ -96,7 +120,7 @@ pygments_style = 'sphinx'
+ 
+ # The theme to use for HTML and HTML Help pages. See the documentation for
+ # a list of builtin themes.
+-html_theme = 'default'
++html_theme = 'furo'
+ 
+ # Theme options are theme-specific and customize the look and feel of a theme
+ # further. For a list of options available for each theme, see the
+@@ -189,7 +213,7 @@ latex_elements = {
+ # (source start file, target name, title, author, documentclass [howto/manual])
+ latex_documents = [(
+     'index', 'Plyer.tex', u'Plyer Documentation',
+-    u'Mathieu Virbel, Akshay Aurora, Gabriel Petier, Ben Rousch', 'manual'
++    author, 'manual'
+ ), ]
+ 
+ # The name of an image file (relative to this directory) to place at the top of
+@@ -219,7 +243,7 @@ latex_documents = [(
+ # (source start file, name, description, authors, manual section).
+ man_pages = [
+     ('index', 'plyer', u'Plyer Documentation',
+-     [u'Mathieu Virbel, Akshay Aurora, Gabriel Petier, Ben Rousch'], 1)
++     [author], 1)
+ ]
+ 
+ # If true, show URL addresses after external links.
+@@ -233,8 +257,11 @@ man_pages = [
+ #  dir menu entry, description, category)
+ texinfo_documents = [(
+     'index', 'Plyer', u'Plyer Documentation',
+-    u'Mathieu Virbel, Akshay Aurora, Gabriel Petier, Ben Rousch',
+-    'Plyer', 'One line description of project.', 'Miscellaneous'
++    author,
++    'Plyer',
++    'Plyer is a platform-independent Python API for accessing hardware '
++    'features of various platforms (Android, iOS, macOS, Linux and Windows).',
++    'Miscellaneous'
+ ), ]
+ 
+ # Documents to append as an appendix to all manuals.
+diff --git a/docs/source/contact.rst b/docs/source/contact.rst
+new file mode 100644
+index 0000000..d57f1eb
+--- /dev/null
++++ b/docs/source/contact.rst
+@@ -0,0 +1,8 @@
++.. _contact:
++
++Contact Us
++==========
++
++If you are looking to contact the Kivy Team (who are responsible for managing the
++Plyer project), including looking for support, please see our
++`latest contact details <https://github.com/kivy/plyer/blob/master/CONTACT.md>`_.
+\ No newline at end of file
+diff --git a/docs/source/contribute.rst b/docs/source/contribute.rst
+new file mode 100644
+index 0000000..651b6a7
+--- /dev/null
++++ b/docs/source/contribute.rst
+@@ -0,0 +1,14 @@
++.. _contribute:
++
++Contribution Guidelines
++=======================
++
++
++Plyer is part of the `Kivy <https://kivy.org>`_ ecosystem - a large group of
++products used by many thousands of developers for free, but it
++is built entirely by the contributions of volunteers. We welcome (and rely on)
++users who want to give back to the community by contributing to the project.
++
++Contributions can come in many forms. See the latest
++[Contribution Guidelines](https://github.com/kivy/plyer/blob/master/CONTRIBUTING.md)
++for general guidelines of how you can help us.
+\ No newline at end of file
+diff --git a/docs/source/faq.rst b/docs/source/faq.rst
+new file mode 100644
+index 0000000..55ec847
+--- /dev/null
++++ b/docs/source/faq.rst
+@@ -0,0 +1,7 @@
++.. _faq:
++
++FAQ
++===
++
++Plyer has an `online FAQ <https://github.com/kivy/plyer/blob/master/FAQ.md>`_. It contains the answers to
++questions that repeatedly come up.
+diff --git a/docs/source/index.rst b/docs/source/index.rst
+index 20ae9d6..5789300 100644
+--- a/docs/source/index.rst
++++ b/docs/source/index.rst
+@@ -1,18 +1,23 @@
+-.. Plyer documentation master file, created by
+-   sphinx-quickstart on Wed Jul  3 15:18:02 2013.
+-   You can adapt this file completely to your liking, but it should at least
+-   contain the root `toctree` directive.
+-
+ Welcome to Plyer
+ ================
+ 
+-Plyer is a Python library for accessing features of your hardware / platforms.
++Plyer is a platform-independent Python API for accessing hardware features
++of various platforms (Android, iOS, macOS, Linux and Windows).
++
++Plyer is managed by the `Kivy Team <https://kivy.org/about.html>`
++and is suitable for use with Kivy apps.
++
++Plyer is released and distributed under the terms of the MIT license. Our
++`latest license <https://github.com/kivy/plyer/blob/master/LICENSE>`_
++is available.
+ 
+-.. automodule:: plyer
+-    :members:
++.. toctree::
++   :maxdepth: 2
+ 
+-.. automodule:: plyer.facades
+-    :members:
++   api
++   contact
++   contribute
++   faq
+ 
+ Indices and tables
+ ==================
+diff --git a/examples/accelerometer/using_graph/libs/garden/garden.graph/__init__.py b/examples/accelerometer/using_graph/libs/garden/garden.graph/__init__.py
+index 841e835..28a28e0 100644
+--- a/examples/accelerometer/using_graph/libs/garden/garden.graph/__init__.py
++++ b/examples/accelerometer/using_graph/libs/garden/garden.graph/__init__.py
+@@ -47,20 +47,28 @@ to be redrawn due to changes. See the MeshLinePlot class for how it is done.
+ __all__ = ('Graph', 'Plot', 'MeshLinePlot', 'MeshStemPlot')
+ 
+ from math import radians
+-from kivy.uix.widget import Widget
+-from kivy.uix.label import Label
+-from kivy.uix.stencilview import StencilView
+-from kivy.properties import NumericProperty, BooleanProperty,\
+-    BoundedNumericProperty, StringProperty, ListProperty, ObjectProperty,\
+-    DictProperty, AliasProperty
++from math import log10, floor, ceil
++from decimal import Decimal
++
++from kivy import metrics
+ from kivy.clock import Clock
++from kivy.event import EventDispatcher
+ from kivy.graphics import Mesh, Color
+ from kivy.graphics.transformation import Matrix
+-from kivy.event import EventDispatcher
+ from kivy.lang import Builder
+-from kivy import metrics
+-from math import log10, floor, ceil
+-from decimal import Decimal
++from kivy.properties import (
++    NumericProperty,
++    BooleanProperty,
++    BoundedNumericProperty,
++    StringProperty,
++    ListProperty,
++    ObjectProperty,
++    DictProperty,
++    AliasProperty,
++)
++from kivy.uix.label import Label
++from kivy.uix.stencilview import StencilView
++from kivy.uix.widget import Widget
+ 
+ Builder.load_string('''
+ #:kivy 1.1.0
+diff --git a/examples/compass/main.py b/examples/compass/main.py
+index 6a4de0c..a2bdaa5 100644
+--- a/examples/compass/main.py
++++ b/examples/compass/main.py
+@@ -101,7 +101,7 @@ class CompassInterface(BoxLayout):
+ 
+     def get_field_uncalib(self, dt):
+         if self.facade.field_uncalib != (None, None, None, None, None, None):
+-            self.x_field, self.y_field, self.z_field, self.x_iron,\
++            self.x_field, self.y_field, self.z_field, self.x_iron, \
+                 self.y_iron, self.z_iron = self.facade.field_uncalib
+ 
+ 
+diff --git a/examples/gyroscope/main.py b/examples/gyroscope/main.py
+index 6364573..31d2d5b 100644
+--- a/examples/gyroscope/main.py
++++ b/examples/gyroscope/main.py
+@@ -98,7 +98,7 @@ class GyroscopeInterface(BoxLayout):
+         empty = tuple([None for i in range(6)])
+ 
+         if self.facade.rotation_uncalib != empty:
+-            self.x_speed, self.y_speed, self.z_speed, self.x_drift,\
++            self.x_speed, self.y_speed, self.z_speed, self.x_drift, \
+                 self.y_drift, self.z_drift = self.facade.rotation_uncalib
+ 
+ 
+diff --git a/examples/maps/main.py b/examples/maps/main.py
+new file mode 100644
+index 0000000..cc675fd
+--- /dev/null
++++ b/examples/maps/main.py
+@@ -0,0 +1,108 @@
++from kivy.app import App
++from kivy.uix.widget import Widget
++from kivy.lang import Builder
++
++Builder.load_string('''
++#:import maps plyer.maps
++<MainScreen>:
++    GridLayout:
++        cols: 1
++        size_hint_y: None
++        size: root.width, root.height
++
++        TextInput:
++            id: saddr
++            hint_text: "Enter Start Address"
++            background_color: 1,1,1,1
++
++        TextInput:
++            id: daddr
++            hint_text: "Destination address (or leave blank for sliders)"
++            background_color: 1,1,1,1
++
++        Label:
++            text: "Destination by Latitude/Longitude:"
++            font_size: 40
++            color: 0.12156862745098039, 0.9176470588235294, 0, 1
++
++        GridLayout:
++            cols: 2
++
++            Label:
++                id: lat
++                text: "Latitude: 0.0"
++                font_size: 40
++                color: 0.12156862745098039, 0.9176470588235294, 0, 1
++
++            Slider:
++                id: lat_slider
++                min: -90
++                max: 90
++                step: 0.00001
++                orientation: "horizontal"
++                on_value:
++                    lat.text = f"Latitude: {self.value:.5f}"
++
++            Label:
++                id: long
++                text: "Longitude: 0.0"
++                font_size: 40
++                color: 0.12156862745098039, 0.9176470588235294, 0, 1
++
++            Slider:
++                id: long_slider
++                min: -180
++                max: 180
++                step: 0.00001
++                orientation: "horizontal"
++                on_value:
++                    long.text = f"Longitude: {self.value:.5f}"
++
++        FloatLayout:
++            Button:
++                text: "Open Maps"
++                font_name: 'Roboto-Bold'
++                color: 0.12156862745098039, 0.9176470588235294, 0, 1
++                background_color: 1,1,1,1
++                background_normal: ''
++                pos_hint: {'center_x': 0.5, "top": .6}
++                size_hint: (.6, .4)
++                on_press:
++                    end = daddr.text if daddr.text != '' \
++                        else f"{lat_slider.value},{long_slider.value}"
++                    start = saddr.text if saddr.text != '' else 'Here'
++                    maps.route(start, end)
++
++        GridLayout:
++            cols: 2
++            padding: 0, 10
++
++            TextInput:
++                id: query
++                hint_text: "Enter Search Term (e.g. Mexican Restaurants)"
++                background_color: 1,1,1,1
++
++            FloatLayout:
++                Button:
++                    text: "Search on Maps"
++                    font_name: 'Roboto-Bold'
++                    color: 0.12156862745098039, 0.9176470588235294, 0, 1
++                    background_color: 1,1,1,1
++                    background_normal: ''
++                    pos_hint: {'center_x': 0.5, "top": .7}
++                    size_hint: (.6, .4)
++                    on_press:
++                        maps.search(query.text)
++''')
++
++
++class MainScreen(Widget):
++    pass
++
++
++class MapsApp(App):
++    def build(self):
++        return MainScreen()
++
++
++MapsApp().run()
+diff --git a/plyer/__init__.py b/plyer/__init__.py
+index 55e6128..a66d3e1 100644
+--- a/plyer/__init__.py
++++ b/plyer/__init__.py
+@@ -8,12 +8,12 @@ __all__ = (
+     'accelerometer', 'audio', 'barometer', 'battery', 'bluetooth',
+     'brightness', 'call', 'camera', 'compass', 'cpu', 'email', 'filechooser',
+     'flash', 'gps', 'gravity', 'gyroscope', 'humidity', 'irblaster',
+-    'keystore', 'light', 'notification', 'orientation', 'processors',
++    'keystore', 'light', 'maps', 'notification', 'orientation', 'processors',
+     'proximity', 'screenshot', 'sms', 'spatialorientation', 'storagepath',
+     'stt', 'temperature', 'tts', 'uniqueid', 'vibrator', 'wifi', 'devicename'
+ )
+ 
+-__version__ = '2.1.0'
++__version__ = '2.2.0.dev0'
+ 
+ 
+ from plyer import facades
+@@ -122,3 +122,6 @@ screenshot = Proxy('screenshot', facades.Screenshot)
+ 
+ #: devicename proxy to :class:`plyer.facades.DeviceName`
+ devicename = Proxy('devicename', facades.DeviceName)
++
++#: Maps proxy to :class:`plyer.facades.Maps`
++maps = Proxy('maps', facades.Maps)
+diff --git a/plyer/facades/__init__.py b/plyer/facades/__init__.py
+index c1e2560..5363d9e 100644
+--- a/plyer/facades/__init__.py
++++ b/plyer/facades/__init__.py
+@@ -12,7 +12,7 @@ __all__ = ('Accelerometer', 'Audio', 'Barometer', 'Battery', 'Call', 'Camera',
+            'Sms', 'TTS', 'UniqueID', 'Vibrator', 'Wifi', 'Flash', 'CPU',
+            'Temperature', 'Humidity', 'SpatialOrientation', 'Brightness',
+            'Processors', 'StoragePath', 'Keystore', 'Bluetooth', 'Screenshot',
+-           'STT', 'DeviceName')
++           'STT', 'DeviceName', 'Maps')
+ 
+ from plyer.facades.accelerometer import Accelerometer
+ from plyer.facades.audio import Audio
+@@ -49,3 +49,4 @@ from plyer.facades.processors import Processors
+ from plyer.facades.cpu import CPU
+ from plyer.facades.screenshot import Screenshot
+ from plyer.facades.devicename import DeviceName
++from plyer.facades.maps import Maps
+diff --git a/plyer/facades/maps.py b/plyer/facades/maps.py
+new file mode 100644
+index 0000000..ba8d5fe
+--- /dev/null
++++ b/plyer/facades/maps.py
+@@ -0,0 +1,88 @@
++'''
++Maps
++=======
++The :class:`Maps` creates a client for accessing the default Maps API.
++
++Holds features such as opening a location by
++address & latitude/longitude, create queries, or find directions between
++two points
++
++Simple Examples
++---------------
++
++Perform a search::
++
++    >>> from plyer import maps
++    >>> maps.search('Mexican Restaurant')
++    >>> maps.search('Taco Bell', latitude=38.5810606, longitude=-121.493895)
++
++Get directions to a location::
++
++    >>> from plyer import maps
++    >>> maps.route('Cupertino', 'San Francisco')
++    >>> maps.route('41.9156316,-72.6130726', '42.65228271484,-73.7577362060')
++
++View a specific location::
++
++    >>> from plyer import maps
++    >>> maps.open_by_address('25 Leshin Lane, Hightstown, NJ')
++    >>> maps.open_by_lat_long(30.451468, -91.187149)
++    >>> maps.open_by_lat_long(30.451468, -91.187149, name='Home')
++
++Supported Platforms
++-------------------
++macOS, iOS
++---------------
++'''
++
++
++class Maps:
++    '''
++    Maps facade.
++    '''
++
++    def open_by_address(self, address, **kwargs):
++        '''
++        Open the specificed location by address in the default Maps API
++        '''
++        self._open_by_address(address, **kwargs)
++
++    def open_by_lat_long(self, latitude, longitude, **kwargs):
++        '''
++        Open the specificed location by latitude & longitude coordinates
++        in the default Maps API
++        '''
++        self._open_by_lat_long(latitude, longitude, **kwargs)
++
++    def search(self, query, **kwargs):
++        '''
++        The query. This parameter is treated as if its value had been typed
++        into the Maps search field by the user.
++
++        Note that query=* is not supported
++        '''
++        self._search(query, **kwargs)
++
++    def route(self, saddr, daddr, **kwargs):
++        '''
++        To provide navigation directions from one location to another.
++
++        :param saddr: The source address to be used as the starting
++        point for directions.
++
++        :param daddr: The destination address to be used as the
++        destination point for directions.
++        '''
++        self._route(saddr, daddr, **kwargs)
++
++    def _open_by_address(self, address, **kwargs):
++        raise NotImplementedError()
++
++    def _open_by_lat_long(self, latitude, longitude, **kwargs):
++        raise NotImplementedError()
++
++    def _search(self, query, **kwargs):
++        raise NotImplementedError()
++
++    def _route(self, saddr, daddr, **kwargs):
++        raise NotImplementedError()
+diff --git a/plyer/facades/sms.py b/plyer/facades/sms.py
+index 0e58f44..5940822 100644
+--- a/plyer/facades/sms.py
++++ b/plyer/facades/sms.py
+@@ -23,7 +23,7 @@ To send sms::
+ 
+ Supported Platforms
+ -------------------
+-Android, iOS
++Android, iOS, macOS
+ 
+ '''
+ 
+@@ -33,17 +33,23 @@ class Sms:
+     Sms facade.
+     '''
+ 
+-    def send(self, recipient, message):
++    def send(self, recipient, message, mode=None, **kwargs):
+         '''
+         Send SMS or open SMS interface.
++        Includes optional `mode` parameter for macOS that can be set to
++        `'SMS'` if carrier-activated device is correctly paired and
++        configured to macOS.
+ 
+         :param recipient: The receiver
+         :param message: the message
++        :param mode: (optional, macOS only), can be set to 'iMessage'
++        (default) or 'SMS'
+ 
+         :type recipient: number
+         :type message: str
++        :type mode: str
+         '''
+-        self._send(recipient=recipient, message=message)
++        self._send(recipient=recipient, message=message, mode=mode, **kwargs)
+ 
+     # private
+ 
+diff --git a/plyer/platforms/android/filechooser.py b/plyer/platforms/android/filechooser.py
+index b809ccb..b8c943c 100644
+--- a/plyer/platforms/android/filechooser.py
++++ b/plyer/platforms/android/filechooser.py
+@@ -43,7 +43,7 @@ using that result will use an incorrect one i.e. the default value of
+ .. versionadded:: 1.4.0
+ '''
+ 
+-from os.path import join, basename
++from os.path import join
+ from random import randint
+ 
+ from android import activity, mActivity
+@@ -62,6 +62,8 @@ Long = autoclass('java.lang.Long')
+ IMedia = autoclass('android.provider.MediaStore$Images$Media')
+ VMedia = autoclass('android.provider.MediaStore$Video$Media')
+ AMedia = autoclass('android.provider.MediaStore$Audio$Media')
++Files = autoclass('android.provider.MediaStore$Files')
++FileOutputStream = autoclass('java.io.FileOutputStream')
+ 
+ 
+ class AndroidFileChooser(FileChooser):
+@@ -74,6 +76,7 @@ class AndroidFileChooser(FileChooser):
+ 
+     # filechooser activity <-> result pair identification
+     select_code = None
++    save_code = None
+ 
+     # default selection value
+     selection = None
+@@ -105,6 +108,7 @@ class AndroidFileChooser(FileChooser):
+     def __init__(self, *args, **kwargs):
+         super().__init__(*args, **kwargs)
+         self.select_code = randint(123456, 654321)
++        self.save_code = randint(123456, 654321)
+         self.selection = None
+ 
+         # bind a function for a response from filechooser activity
+@@ -139,9 +143,11 @@ class AndroidFileChooser(FileChooser):
+ 
+         # create Intent for opening
+         file_intent = Intent(Intent.ACTION_GET_CONTENT)
+-        if not self.selected_mime_type or \
+-            type(self.selected_mime_type) != str or \
+-                self.selected_mime_type not in self.mime_type:
++        if (
++            not self.selected_mime_type
++            or not isinstance(self.selected_mime_type, str)
++            or self.selected_mime_type not in self.mime_type
++        ):
+             file_intent.setType("*/*")
+         else:
+             file_intent.setType(self.mime_type[self.selected_mime_type])
+@@ -163,6 +169,38 @@ class AndroidFileChooser(FileChooser):
+             self.select_code
+         )
+ 
++    def _save_file(self, **kwargs):
++        self._save_callback = kwargs.pop("callback")
++
++        title = kwargs.pop("title", None)
++
++        self.selected_mime_type = \
++            kwargs.pop("filters")[0] if "filters" in kwargs else ""
++
++        file_intent = Intent(Intent.ACTION_CREATE_DOCUMENT)
++        if (
++            not self.selected_mime_type
++            or not isinstance(self.selected_mime_type, str)
++            or self.selected_mime_type not in self.mime_type
++        ):
++            file_intent.setType("*/*")
++        else:
++            file_intent.setType(self.mime_type[self.selected_mime_type])
++        file_intent.addCategory(
++            Intent.CATEGORY_OPENABLE
++        )
++
++        if title:
++            file_intent.putExtra(Intent.EXTRA_TITLE, title)
++
++        mActivity.startActivityForResult(
++            Intent.createChooser(file_intent, cast(
++                'java.lang.CharSequence',
++                String("FileChooser")
++            )),
++            self.save_code
++        )
++
+     def _on_activity_result(self, request_code, result_code, data):
+         '''
+         Listener for ``android.app.Activity.onActivityResult()`` assigned
+@@ -171,28 +209,41 @@ class AndroidFileChooser(FileChooser):
+         .. versionadded:: 1.4.0
+         '''
+ 
+-        # not our response
+-        if request_code != self.select_code:
++        # bad data
++        if data is None:
+             return
+ 
+         if result_code != Activity.RESULT_OK:
+             # The action had been cancelled.
+             return
+ 
+-        selection = []
+-        # Process multiple URI if multiple files selected
+-        try:
+-            for count in range(data.getClipData().getItemCount()):
+-                ele = self._resolve_uri(
+-                    data.getClipData().getItemAt(count).getUri()) or []
+-                selection.append(ele)
+-        except Exception:
+-            selection = [self._resolve_uri(data.getData()), ]
+-
+-        # return value to object
+-        self.selection = selection
+-        # return value via callback
+-        self._handle_selection(selection)
++        if request_code == self.select_code:
++            selection = []
++            # Process multiple URI if multiple files selected
++            try:
++                for count in range(data.getClipData().getItemCount()):
++                    ele = self._resolve_uri(
++                        data.getClipData().getItemAt(count).getUri()) or []
++                    selection.append(ele)
++            except Exception:
++                selection = [self._resolve_uri(data.getData()), ]
++
++            # return value to object
++            self.selection = selection
++            # return value via callback
++            self._handle_selection(selection)
++
++        elif request_code == self.save_code:
++            uri = data.getData()
++
++            with mActivity.getContentResolver().openFileDescriptor(
++                uri, "w"
++            ) as pfd:
++                with FileOutputStream(
++                    pfd.getFileDescriptor()
++                ) as fileOutputStream:
++                    # return value via callback
++                    self._save_callback(fileOutputStream)
+ 
+     @staticmethod
+     def _handle_external_documents(uri):
+@@ -206,28 +257,19 @@ class AndroidFileChooser(FileChooser):
+         file_id = DocumentsContract.getDocumentId(uri)
+         file_type, file_name = file_id.split(':')
+ 
+-        # internal SD card mostly mounted as a files storage in phone
+-        internal = storagepath.get_external_storage_dir()
+-
+-        # external (removable) SD card i.e. microSD
+-        external = storagepath.get_sdcard_dir()
+-        try:
+-            external_base = basename(external)
+-        except TypeError:
+-            external_base = basename(internal)
++        primary_storage = storagepath.get_external_storage_dir()
++        sdcard_storage = storagepath.get_sdcard_dir()
+ 
+-        # resolve sdcard path
+-        sd_card = internal
++        directory = primary_storage
+ 
+-        # because external might have /storage/.../1 or other suffix
+-        # and file_type might be only a part of the real folder in /storage
+-        if file_type in external_base or external_base in file_type:
+-            sd_card = external
++        if file_type == "primary":
++            directory = primary_storage
+         elif file_type == "home":
+-            sd_card = join(Environment.getExternalStorageDirectory(
+-            ).getAbsolutePath(), Environment.DIRECTORY_DOCUMENTS)
++            directory = join(primary_storage, Environment.DIRECTORY_DOCUMENTS)
++        elif sdcard_storage and file_type in sdcard_storage:
++            directory = sdcard_storage
+ 
+-        return join(sd_card, file_name)
++        return join(directory, file_name)
+ 
+     @staticmethod
+     def _handle_media_documents(uri):
+@@ -248,6 +290,11 @@ class AndroidFileChooser(FileChooser):
+             uri = VMedia.EXTERNAL_CONTENT_URI
+         elif file_type == 'audio':
+             uri = AMedia.EXTERNAL_CONTENT_URI
++
++        # Other file type was selected (probably in the Documents folder)
++        else:
++            uri = Files.getContentUri("external")
++
+         return file_name, selection, uri
+ 
+     @staticmethod
+@@ -279,6 +326,23 @@ class AndroidFileChooser(FileChooser):
+         .. versionadded:: 1.4.0
+         '''
+ 
++        try:
++            download_dir = Environment.getExternalStoragePublicDirectory(
++                Environment.DIRECTORY_DOWNLOADS
++            ).getPath()
++            path = AndroidFileChooser._parse_content(
++                uri=uri,
++                projection=["_display_name"],
++                selection=None,
++                selection_args=None,
++                sort_order=None,
++            )
++            return join(download_dir, path)
++
++        except Exception:
++            import traceback
++            traceback.print_exc()
++
+         # known locations, differ between machines
+         downloads = [
+             'content://downloads/public_downloads',
+@@ -441,6 +505,8 @@ class AndroidFileChooser(FileChooser):
+         mode = kwargs.pop('mode', None)
+         if mode == 'open':
+             self._open_file(**kwargs)
++        elif mode == 'save':
++            self._save_file(**kwargs)
+ 
+ 
+ def instance():
+diff --git a/plyer/platforms/android/gps.py b/plyer/platforms/android/gps.py
+index 17fd86e..cd70beb 100644
+--- a/plyer/platforms/android/gps.py
++++ b/plyer/platforms/android/gps.py
+@@ -29,6 +29,12 @@ class _LocationListener(PythonJavaClass):
+             altitude=location.getAltitude(),
+             accuracy=location.getAccuracy())
+ 
++    @java_method('(Ljava/util/List;)V', name='onLocationChanged')
++    def onLocationChangedList(self, location_list):
++        ''' Called when location data is sent in a batch (API31) '''
++        location = location_list.get(location_list.size() - 1)
++        self.onLocationChanged(location)
++
+     @java_method('(Ljava/lang/String;)V')
+     def onProviderEnabled(self, status):
+         if self.root.on_status:
+diff --git a/plyer/platforms/android/notification.py b/plyer/platforms/android/notification.py
+index a5113ed..9e1f25b 100644
+--- a/plyer/platforms/android/notification.py
++++ b/plyer/platforms/android/notification.py
+@@ -148,10 +148,15 @@ class AndroidNotification(Notification):
+         notification_intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
+         notification_intent.setAction(Intent.ACTION_MAIN)
+         notification_intent.addCategory(Intent.CATEGORY_LAUNCHER)
++        if SDK_INT >= 23:
++            # FLAG_IMMUTABLE added in SDK 23, required since SDK 31:
++            pending_flags = PendingIntent.FLAG_IMMUTABLE
++        else:
++            pending_flags = 0
+ 
+         # get our application Activity
+         pending_intent = PendingIntent.getActivity(
+-            app_context, 0, notification_intent, 0
++            app_context, 0, notification_intent, pending_flags
+         )
+ 
+         notification.setContentIntent(pending_intent)
+diff --git a/plyer/platforms/android/storagepath.py b/plyer/platforms/android/storagepath.py
+index 788e3fc..d18ea61 100755
+--- a/plyer/platforms/android/storagepath.py
++++ b/plyer/platforms/android/storagepath.py
+@@ -3,14 +3,13 @@ Android Storage Path
+ --------------------
+ '''
+ 
+-from os import listdir, access, R_OK
+-from os.path import join
+ from plyer.facades import StoragePath
+-from jnius import autoclass
++from plyer.platforms.android import SDK_INT
++from jnius import autoclass, cast
+ from android import mActivity
+ 
+-Environment = autoclass('android.os.Environment')
+-Context = autoclass('android.content.Context')
++Environment = autoclass("android.os.Environment")
++Context = autoclass("android.content.Context")
+ 
+ 
+ class AndroidStoragePath(StoragePath):
+@@ -25,17 +24,29 @@ class AndroidStoragePath(StoragePath):
+         '''
+         .. versionadded:: 1.4.0
+         '''
+-        # folder in /storage/ that is readable
+-        # and is not internal SD card
+         path = None
+-        for folder in listdir('/storage'):
+-            folder = join('/storage', folder)
+-            if folder in self._get_external_storage_dir():
+-                continue
+-            if not access(folder, R_OK):
+-                continue
+-            path = folder
+-            break
++        context = mActivity.getApplicationContext()
++        storage_manager = cast(
++            "android.os.storage.StorageManager",
++            context.getSystemService(Context.STORAGE_SERVICE),
++        )
++
++        if storage_manager is not None:
++            if SDK_INT >= 24:
++                storage_volumes = storage_manager.getStorageVolumes()
++                for storage_volume in storage_volumes:
++                    if storage_volume.isRemovable():
++                        try:
++                            directory = storage_volume.getDirectory()
++                        except AttributeError:
++                            directory = storage_volume.getPathFile()
++                        path = directory.getAbsolutePath()
++            else:
++                storage_volumes = storage_manager.getVolumeList()
++                for storage_volume in storage_volumes:
++                    if storage_volume.isRemovable():
++                        path = storage_volume.getPath()
++
+         return path
+ 
+     def _get_root_dir(self):
+diff --git a/plyer/platforms/ios/maps.py b/plyer/platforms/ios/maps.py
+new file mode 100644
+index 0000000..88024e5
+--- /dev/null
++++ b/plyer/platforms/ios/maps.py
+@@ -0,0 +1,78 @@
++'''
++Module of iOS API for plyer.maps.
++'''
++
++import webbrowser
++from plyer.facades import Maps
++from urllib.parse import quote_plus
++
++
++class iOSMaps(Maps):
++    '''
++    Implementation of iOS Maps API.
++    '''
++
++    def _open_by_address(self, address, **kwargs):
++        '''
++        :param address: An address string that geolocation can understand.
++        '''
++
++        address = quote_plus(address, safe=',')
++        maps_address = 'http://maps.apple.com/?address=' + address
++
++        webbrowser.open(maps_address)
++
++    def _open_by_lat_long(self, latitude, longitude, **kwargs):
++        '''
++        Open a coordinate span denoting a latitudinal delta and a
++        longitudinal delta (similar to MKCoordinateSpan)
++
++        :param name: (optional), will set the name of the dropped pin
++        '''
++
++        name = kwargs.get("name", "Selected Location")
++        maps_address = 'http://maps.apple.com/?ll={},{}&q={}'.format(
++            latitude, longitude, name)
++
++        webbrowser.open(maps_address)
++
++    def _search(self, query, **kwargs):
++        '''
++        :param query: A string that describes the search object (ex. "Pizza")
++
++        :param latitude: (optional), narrow down query within area,
++        MUST BE USED WITH LONGITUDE
++
++        :param longitude: (optional), narrow down query within area,
++        MUST BE USED WITH LATITUDE
++        '''
++
++        latitude = kwargs.get('latitude')
++        longitude = kwargs.get('longitude')
++
++        query = quote_plus(query, safe=',')
++        maps_address = 'http://maps.apple.com/?q=' + query
++
++        if latitude is not None and longitude is not None:
++            maps_address += '&sll={},{}'.format(latitude, longitude)
++
++        webbrowser.open(maps_address)
++
++    def _route(self, saddr, daddr, **kwargs):
++        '''
++        :param saddr: can be given as 'address' or 'lat,long'
++        :param daddr: can be given as 'address' or 'lat,long'
++        '''
++        saddr = quote_plus(saddr, safe=',')
++        daddr = quote_plus(daddr, safe=',')
++
++        maps_address = 'http://maps.apple.com/?saddr={}&daddr={}'.format(
++                                                            saddr, daddr)
++        webbrowser.open(maps_address)
++
++
++def instance():
++    '''
++    Instance for facade proxy.
++    '''
++    return iOSMaps()
+diff --git a/plyer/platforms/linux/filechooser.py b/plyer/platforms/linux/filechooser.py
+index cfdb1ae..e4ac857 100644
+--- a/plyer/platforms/linux/filechooser.py
++++ b/plyer/platforms/linux/filechooser.py
+@@ -122,7 +122,7 @@ class ZenityFileChooser(SubprocessFileChooser):
+         if self.icon:
+             cmdline += ["--window-icon", self.icon]
+         for f in self.filters:
+-            if type(f) == str:
++            if isinstance(f, str):
+                 cmdline += ["--file-filter", f]
+             else:
+                 cmdline += [
+@@ -150,7 +150,7 @@ class KDialogFileChooser(SubprocessFileChooser):
+         filt = []
+ 
+         for f in self.filters:
+-            if type(f) == str:
++            if isinstance(f, str):
+                 filt += [f]
+             else:
+                 filt += list(f[1:])
+@@ -195,7 +195,7 @@ class YADFileChooser(SubprocessFileChooser):
+     def _gen_cmdline(self):
+         cmdline = [
+             which(self.executable),
+-            "--file-selection",
++            "--file",
+             "--confirm-overwrite",
+             "--geometry",
+             "800x600+150+150"
+@@ -215,7 +215,7 @@ class YADFileChooser(SubprocessFileChooser):
+         if self.icon:
+             cmdline += ["--window-icon", self.icon]
+         for f in self.filters:
+-            if type(f) == str:
++            if isinstance(f, str):
+                 cmdline += ["--file-filter", f]
+             else:
+                 cmdline += [
+diff --git a/plyer/platforms/macosx/filechooser.py b/plyer/platforms/macosx/filechooser.py
+index 85fb91c..38ab99d 100644
+--- a/plyer/platforms/macosx/filechooser.py
++++ b/plyer/platforms/macosx/filechooser.py
+@@ -80,7 +80,7 @@ class MacFileChooser:
+         if self.filters:
+             filthies = []
+             for f in self.filters:
+-                if type(f) == str:
++                if isinstance(f, str):
+                     f = (None, f)
+                 for s in f[1:]:
+                     if not self.use_extensions:
+diff --git a/plyer/platforms/macosx/maps.py b/plyer/platforms/macosx/maps.py
+new file mode 100644
+index 0000000..5dc6622
+--- /dev/null
++++ b/plyer/platforms/macosx/maps.py
+@@ -0,0 +1,90 @@
++'''
++Module of macOS API for plyer.maps.
++'''
++
++from subprocess import Popen, PIPE
++from plyer.facades import Maps
++from urllib.parse import quote_plus
++
++
++class MacOSMaps(Maps):
++    '''
++    Implementation of MacOS Maps API.
++    '''
++
++    def _open_by_address(self, address, **kwargs):
++        '''
++        :param address: An address string that geolocation can understand.
++        '''
++
++        address = quote_plus(address, safe=',')
++        maps_address = 'http://maps.apple.com/?address=' + address
++
++        process = Popen(
++            ['open', '-a', 'Maps', maps_address],
++            stdout=PIPE, stderr=PIPE)
++        stdout, stderr = process.communicate()
++
++    def _open_by_lat_long(self, latitude, longitude, **kwargs):
++        '''
++        Open a coordinate span denoting a latitudinal delta and a
++        longitudinal delta (similar to MKCoordinateSpan)
++
++        :param name: (optional), will set the name of the dropped pin
++        '''
++
++        name = kwargs.get("name", "Selected Location")
++        maps_address = 'http://maps.apple.com/?ll={},{}&q={}'.format(
++            latitude, longitude, name)
++
++        process = Popen(
++            ['open', '-a', 'Maps', maps_address],
++            stdout=PIPE, stderr=PIPE)
++        stdout, stderr = process.communicate()
++
++    def _search(self, query, **kwargs):
++        '''
++        :param query: A string that describes the search object (ex. "Pizza")
++
++        :param latitude: (optional), narrow down query within area,
++        MUST BE USED WITH LONGITUDE
++
++        :param longitude: (optional), narrow down query within area,
++        MUST BE USED WITH LATITUDE
++        '''
++
++        latitude = kwargs.get('latitude')
++        longitude = kwargs.get('longitude')
++
++        query = quote_plus(query, safe=',')
++        maps_address = 'http://maps.apple.com/?q=' + query
++
++        if latitude is not None and longitude is not None:
++            maps_address += '&sll={},{}'.format(latitude, longitude)
++
++        process = Popen(
++            ['open', '-a', 'Maps', maps_address],
++            stdout=PIPE, stderr=PIPE)
++        stdout, stderr = process.communicate()
++
++    def _route(self, saddr, daddr, **kwargs):
++        '''
++        :param saddr: can be given as 'address' or 'lat,long'
++        :param daddr: can be given as 'address' or 'lat,long'
++        '''
++        saddr = quote_plus(saddr, safe=',')
++        daddr = quote_plus(daddr, safe=',')
++
++        maps_address = 'http://maps.apple.com/?saddr={}&daddr={}'.format(
++                                                            saddr, daddr)
++        process = Popen(
++            ['open', '-a', 'Maps', maps_address],
++            stdout=PIPE, stderr=PIPE)
++        stdout, stderr = process.communicate()
++
++
++def instance():
++    '''
++    Instance for facade proxy.
++    '''
++    return MacOSMaps()
+diff --git a/plyer/platforms/macosx/sms.py b/plyer/platforms/macosx/sms.py
+new file mode 100644
+index 0000000..093ac24
+--- /dev/null
++++ b/plyer/platforms/macosx/sms.py
+@@ -0,0 +1,42 @@
++from subprocess import Popen, PIPE
++from plyer.facades import Sms as SMS
++from plyer.utils import whereis_exe
++
++
++class MacOSSMS(SMS):
++    '''
++    Implementation of macOS' Messages API
++    '''
++
++    def _send(self, **kwargs):
++        '''
++        Will send `message` to `recipient` via Messages app
++
++        By default, if `mode` is not explicitly set, `iMessage` is used.
++        In order to use `SMS` mode, a valid carrier-activated device must
++        be connected and configured.
++        '''
++
++        recipient = kwargs.get('recipient')
++        message = kwargs.get('message')
++        mode = kwargs.get('mode')  # Supported modes: iMessage (default), SMS
++        if not mode:
++            mode = 'iMessage'
++
++        APPLESCRIPT = f"""tell application "Messages"
++    set targetService to 1st account whose service type = {mode}
++    set targetBuddy to participant "{recipient}" of targetService
++    send "{message}" to targetBuddy
++end tell"""
++
++        osascript_process = Popen(
++            ['osascript', '-e', APPLESCRIPT], stdout=PIPE, stderr=PIPE)
++        stdout, stderr = osascript_process.communicate()
++
++
++def instance():
++    import sys
++    if whereis_exe('osascript'):
++        return MacOSSMS()
++    sys.stderr.write('osascript not found.')
++    return SMS()
+diff --git a/plyer/platforms/win/filechooser.py b/plyer/platforms/win/filechooser.py
+index d61fdc1..8a26fe3 100644
+--- a/plyer/platforms/win/filechooser.py
++++ b/plyer/platforms/win/filechooser.py
+@@ -84,7 +84,7 @@ class Win32FileChooser:
+                 # e.g. open_file(filters=['*.txt', '*.py'])
+                 filters = ""
+                 for f in self.filters:
+-                    if type(f) == str:
++                    if isinstance(f, str):
+                         filters += (f + "\x00") * 2
+                     else:
+                         filters += f[0] + "\x00" + ";".join(f[1:]) + "\x00"
+diff --git a/setup.py b/setup.py
+index 1467e92..80f65af 100644
+--- a/setup.py
++++ b/setup.py
+@@ -56,7 +56,8 @@ with io.open(join(CURDIR, "CHANGELOG.md"), encoding="utf8") as fd:
+ setup(
+     name='plyer',
+     version=plyer.__version__,
+-    description='Platform-independent wrapper for platform-dependent APIs',
++    description='A platform-independent Python API for accessing hardware'
++    'features of various platforms (Android, iOS, macOS, Linux and Windows).',
+     long_description=README + u"\n\n" + CHANGELOG + u"\n\n",
+     long_description_content_type='text/markdown',
+     author='Kivy team',
+@@ -69,7 +70,7 @@ setup(
+     license='MIT',
+     zip_safe=False,
+     classifiers=[
+-        'Development Status :: 4 - Beta',
++        'Development Status :: 5 - Production/Stable',
+         'Intended Audience :: Developers',
+         'Natural Language :: English',
+         'License :: OSI Approved :: MIT License',
+@@ -81,5 +82,10 @@ setup(
+         'Programming Language :: Python :: 3.10',
+         'Programming Language :: Python :: 3.11',
+     ],
++    project_urls={
++        'Documentation': "https://plyer.readthedocs.io",
++        'Source': "https://github.com/kivy/plyer",
++        'Bug Reports': "https://github.com/kivy/plyer/issues",
++    },
+     **EXTRA_OPTIONS
+ )

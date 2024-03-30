@@ -1,0 +1,78 @@
+#kivy 2.0
+<MainWidget>
+    Label:
+        text:"Latitude:"
+    Label:
+        id: lat_value
+        text: "0.0"
+    Label:
+        text:"Longitude:"
+    Label:
+        id:lon_value
+        text: "0.0"
+    Label:
+        text:"Set Latitude:"
+    TextInput:
+        id:lat_set
+        text:"0.0"
+    Label:
+        text:"Set Longitude:"
+    TextInput:
+        id:lon_set
+        text:"0.0"
+    Label:
+        id:gps_value
+        text:"GPS Value"
+    Button:
+        id:btn_getGps
+        text:"Play"
+        on_press:root.play_callback(btn_getGps)
+    Label:
+        id:accelerometer
+        text:"Accelerometer"
+    Label:
+        id:barometer
+        text:"Barometer"
+    Label:
+        id:compass
+        text:"Compass"
+    Label:
+        id:gravity
+        text:"Gravity"
+    Label:
+        id:gyroscope
+        text:"Gyroscope"
+    Label:
+        id:infrared
+        text:"Infrared"
+    Label:
+        id:light
+        text:"Light"
+    Label:
+        id:proximity
+        text:"Proximity"
+    Label:
+        id:uid
+        text:"UniqueID"
+    Button:
+        id:flash
+        text:"Flash Open"
+        on_press:root.flash_switch(flash)
+    Label:
+        id:temperature
+        text:"Temperature"
+    Label:
+        id:spatial
+        text:"Spatial Orientation"
+    Label:
+        id:brightness
+        text:"Brightness"
+    Label:
+        id:proc
+        text:"Proc Statu"
+    Label:
+        id:Dp
+        text:"All Dp"
+    Label:
+        id:bluetooth
+        text:"Bluetooth"
