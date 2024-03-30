@@ -1,15 +1,14 @@
 --debug
---sdk_dir /home/blacklee/.buildozer/android/platform/android-sdk
---android_api 27
---ndk_dir /home/blacklee/.buildozer/android/platform/android-ndk-r19c
---ndk_version r19c
-
+--android_api 31
+--arch=arm64-v8a
+--icon "MyApp2/icons/B_.png"
+--presplash "MyApp2/icons/Bdot_.png"
 --dist_name=MyApp2
---name "Black app1" 
---requirements python3,kivy,pyjnius
+--name "Blackapp1" 
+--requirements python3,kivy,pyjnius,plyer==2.1.0
 --bootstrap sdl2 
 
---private .
+--private MyApp2
 --package org.blackapp.myapp 
 --version 0.1 
 --permission VIBRATE

@@ -141,6 +141,7 @@ class MainWidget(GridLayout):
 
 class BlackApp(App):
     def build(self):
+        self.icon = 'icons/B_.png'
         AmainWidget = MainWidget()
         request_permissions(
             [Permission.WRITE_EXTERNAL_STORAGE,
