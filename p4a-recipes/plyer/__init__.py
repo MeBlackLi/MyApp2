@@ -10,7 +10,7 @@ class PlyerRecipe(PythonRecipe):
     depends = ['pyjnius']
     site_packages_name = 'plyer'
 
-    patches = ['master.patch']
+    patches = ['master.patch', 'flash.patch']
 
 
 recipe = PlyerRecipe()

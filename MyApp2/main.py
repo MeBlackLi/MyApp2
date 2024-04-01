@@ -81,7 +81,7 @@ class MainWidget(GridLayout):
 
     def play_callback(self, instance):
         if(self.existVibrator):
-            vibrator.vibrate(0.1)
+            vibrator.vibrate(5)
         # jnius function
         # vibrator.vibrate(10000)  # the argument is in milliseconds
 
@@ -120,7 +120,7 @@ class MainWidget(GridLayout):
             self.ids['infrared'].text = str(irblaster.exists())
             self.ids['light'].text = str(light.illumination)+' lx'
             # self.ids['proximity'].text = str(proximity.proximity)
-            self.ids['flash'].text = 'ON'
+            # self.ids['flash'].text = 'ON'
             self.ids['temperature'].text = str(temperature.temperature)
             self.ids['spatial'].text = '\n'.join(
                 map(str, spatialorientation.orientation))
