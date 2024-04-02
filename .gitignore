@@ -6,7 +6,7 @@
 # Node artifact files
 node_modules/
 dist/
-
+.buildozer/
 # Compiled Java class files
 *.class
 
